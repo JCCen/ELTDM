@@ -1,3 +1,4 @@
 Article original : https://www.aclweb.org/anthology/D16-1191.pdf
 Revue de littérature :  https://hal-centralesupelec.archives-ouvertes.fr/hal-01986309/file/Core_Decomposition_VLDBJ.pdf
 Algo en O(n) : http://vlado.fmf.uni-lj.si/pub/networks/doc/cores/cores.pdf
+https://github.com/networkx/networkx/blob/b8460be7b055dc18e2fdde3b8739d41f0c0064a3/networkx/algorithms/core.py#L138
