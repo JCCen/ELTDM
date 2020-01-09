@@ -12,9 +12,9 @@ import nltk
 import cairocffi
 import string
 from nltk.corpus import stopwords
+import timeit
 
-
-def core_dec(g,weighted):
+def naive_core_dec(g,weighted):
     '''(un)weighted k-core decomposition'''
     # work on clone of g to preserve g 
     gg = copy.deepcopy(g)
@@ -22,8 +22,8 @@ def core_dec(g,weighted):
         gg.vs['weight'] = gg.strength() # overwrite the 'weight' vertex attribute with the unweighted degrees
     # initialize dictionary that will contain the core numbers
     cores_g = dict(zip(gg.vs['name'],[0]*len(gg.vs)))
-    layout = g.layout("kk")
-    igraph.plot(gg, layout = layout)
+#    layout = g.layout("kk")
+#    igraph.plot(gg, layout = layout)
 #    testplot(gg,"initial")
     
     while len(gg.vs) > 0:
@@ -55,19 +55,17 @@ def core_dec(g,weighted):
                 gg.vs[index_n]['weight'] = max(min_degree,new_degrees[index_n])  
         
     return(cores_g)
+    
+    
+
 
 # =============================================================================
 # TO TEST
 # =============================================================================
-
 stpwds = stopwords.words('english')
 punct = string.punctuation.replace('-', '')
 
-my_doc = 'A method for solution of systems of linear algebraic equations \
-with m-dimensional lambda matrices. A system of linear algebraic \
-equations with m-dimensional lambda matrices is considered. \
-The proposed method of searching for the solution of this system \
-lies in reducing it to a numerical system of a special kind.'
+my_doc = "We  operate  a  change  of  paradigm  and  hy-pothesize that keywords are more likely to befound amonginfluentialnodes of a graph-of-words  rather  than  among  its  nodes  high  oneigenvector-related  centrality  measures.    Totest  this  hypothesis,  we  introduce  unsuper-vised techniques that capitalize ongraph de-generacy.Our  methods  strongly  and  sig-nificantly  outperform  all  baselines  on  twodatasets (short and medium size documents),and reach best performance on the third one(long documents). Keyword extraction is a central task in NLP. It findsapplications from information retrieval (notably websearch) to text classification, summarization, and vi-sualization.   In this study,  we focus on the task ofunsupervised  single-document  keyword  extraction.Following (Mihalcea and Tarau, 2004), we concen-trate onkeywordsonly, letting the task ofkeyphrasereconstruction as a post-processing step.More  precisely,  while  we  capitalize  on  a  graphrepresentation   of   text   like   several   previous   ap-proaches, we deviate from them by making the as-sumption that keywords are not found amongpres-tigiousnodes  (or  more  generally,  nodes  high  oneigenvector-related  centrality  metrics),  but  ratheramonginfluentialnodes. Those nodes may not havemany important  connections (like  their prestigiouscounterparts), but they are ideally placed at the core∗This research is supported in part by the OpenPaaS::NGproject.of  the  network.   In  other  words,  this  switches  theobjective from capturing thequalityandquantityofsingle node connections, to taking into account thedensityandcohesivenessof groups of nodes. To op-erate this change of paradigm,  we propose severalalgorithms that leverage the concept ofgraph degen-eracy"
 
 my_doc = my_doc.replace('\n', '')
 
@@ -76,21 +74,26 @@ my_tokens = clean_text_simple(my_doc,my_stopwords=stpwds,punct=punct)
 
 g = terms_to_graph(my_tokens, 4)
 
-# number of edges
-print(len(g.es))
+## number of edges
+#print(len(g.es))
+#
+## the number of nodes should be equal to the number of unique terms
+#len(g.vs) == len(set(my_tokens))
 
-# the number of nodes should be equal to the number of unique terms
-len(g.vs) == len(set(my_tokens))
-
-edge_weights = []
-for edge in g.es:
-    source = g.vs[edge.source]['name']
-    target = g.vs[edge.target]['name']
-    weight = edge['weight']
-    edge_weights.append([source, target, weight])
-
+#edge_weights = []
+#
+#for edge in g.es:
+#    source = g.vs[edge.source]['name']
+#    target = g.vs[edge.target]['name']
+#    weight = edge['weight']
+#    edge_weights.append([source, target, weight])
 
 g = terms_to_graph(my_tokens,5)
-core_numbers = core_dec(g,False)
+
+
+#naive_core_dec(g,False)
+#core_numbers = naive_core_dec(g,False)
 #print(core_numbers)
-print(core_numbers == {'algebra': 8.0, 'equat': 8.0, 'kind': 3.0, 'lambda': 8.0, 'linear': 8.0, 'm-dimension': 8.0, 'matric': 7.0, 'method': 7.0, 'numer': 5.0, 'solut': 7.0, 'special': 3.0, 'system': 8.0})
+
+#to test :
+#print(core_numbers == {'account': 7.0, 'amonginfluentialnod': 7.0, 'amongpres-tigiousnod': 8.0, 'ap-proach': 8.0, 'as-sumpt': 8.0, 'baselin': 8.0, 'best': 8.0, 'central': 8.0, 'chang': 7.0, 'classif': 8.0, 'concept': 4.0, 'connect': 7.0, 'core∗thi': 7.0, 'de-generacyour': 8.0, 'degen-eraci': 4.0, 'document': 8.0, 'documentsand': 8.0, 'extract': 8.0, 'graph-of-word': 7.0, 'graphrepresent': 8.0, 'group': 7.0, 'high': 8.0, 'hy-pothes': 6.0, 'hypothesi': 8.0, 'import': 7.0, 'inform': 8.0, 'keyword': 8.0, 'like': 7.0, 'medium': 8.0, 'method': 8.0, 'metric': 7.0, 'mihalcea': 8.0, 'network': 7.0, 'nlp': 8.0, 'node': 8.0, 'ofkeyphrasereconstruct': 8.0, 'oneigenvector-rel': 8.0, 'onelong': 8.0, 'ongraph': 8.0, 'openpaasngprojectof': 7.0, 'paradigm': 7.0, 'part': 7.0, 'perform': 8.0, 'post-process': 8.0, 'prestigiouscounterpart': 7.0, 'previou': 8.0, 'ratheramonginfluentialnod': 7.0, 'reach': 8.0, 'research': 7.0, 'retriev': 8.0, 'sever': 8.0, 'severalalgorithm': 4.0, 'short': 8.0, 'single-docu': 8.0, 'size': 8.0, 'stepmor': 8.0, 'studi': 8.0, 'summar': 8.0, 'switch': 7.0, 'tarau': 8.0, 'task': 8.0, 'techniqu': 8.0, 'text': 8.0, 'thedensityandcohesivenessof': 7.0, 'thequalityandquantityofsingl': 7.0, 'third': 8.0, 'totest': 8.0, 'twodataset': 8.0, 'unsuper-vis': 8.0, 'vi-sual': 8.0, 'word': 7.0})
