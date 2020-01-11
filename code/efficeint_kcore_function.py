@@ -5,8 +5,7 @@ def better_core_dec(g,weighted):
     
     # work on clone of g to preserve g 
     gg = copy.deepcopy(g)
-    if not weighted:
-        gg.vs['weight'] = gg.strength() # overwrite the 'weight' vertex attribute with the unweighted degrees
+
     # initialize dictionary that will contain the core numbers
     cores_g = dict(zip(gg.vs['name'],[0]*len(gg.vs)))
 #    layout = g.layout("kk")
