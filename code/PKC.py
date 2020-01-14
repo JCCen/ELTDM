@@ -106,7 +106,7 @@ def parallel_pkc(G):
 
     # Apply kernel
     func = mod.get_function("doublify")
-    func(nodes_gpu, grid = (14, 1), block=(1, 1, 1))
+    func(nodes_gpu, grid = (1, 1), block=(20, 1, 1))
 
     # Retrieve results
     nodes_doubled = np.empty_like(nodes)
