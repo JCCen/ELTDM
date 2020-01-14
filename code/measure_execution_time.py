@@ -73,6 +73,7 @@ def o_n2(n):
     
 def oo_n2(n):
     return 10**n
+
 def f(*args, **kw):
     # a function that with growing
     # memory consumption
@@ -82,6 +83,7 @@ def f(*args, **kw):
     sleep(.1)
     c = b * 100
     return a
+
 from memory_profiler import memory_usage
 from time import sleep
 G_5 = nx.duplication_divergence_graph(5,0.5)
@@ -99,4 +101,4 @@ print('Maximum memory usage: %s' % mem_usage)
 ##G_1000 = nx.duplication_divergence_graph(1000,0.5)
 ##G_4000 = nx.duplication_divergence_graph(4000,0.5)
 #
-#plot_times([scalable_algo_sequential.seq_k_core_decompo,naive_algo.naive_approach],get_mem_usage,[G_5,G_50,G_100])
+plot_times([scalable_algo_sequential.seq_k_core_decompo,naive_algo.naive_approach],get_mem_usage,[G_5,G_50,G_100])
