@@ -6,31 +6,31 @@ def plot_graph(G):
     nx.draw(G, with_labels=True)
     plt.show()
 
-# Toy graph
-G = nx.Graph([])
-G.add_edges_from([(1,2),(1,8),(1,9),
-                  (5,2),
-                  (5,3),
-                  (5,4),
-                  (5,6),
-                  (6,7),
-                  (6,8),
-                  (6,9),
-                  (7,8),
-                  (7,9),
-                  (8,9),
-                  (9,10),
-                  (10,11),
-                  (11,14),
-                  (11,15),
-                  (11,12),
-                  (14,15),
-                  (15,12),
-                  (12,14)
-                 ])
-# plot_graph(G)
-print(nx.core_number(G))
-
+## Toy graph
+#G = nx.Graph([])
+#G.add_edges_from([(1,2),(1,8),(1,9),
+#                  (5,2),
+#                  (5,3),
+#                  (5,4),
+#                  (5,6),
+#                  (6,7),
+#                  (6,8),
+#                  (6,9),
+#                  (7,8),
+#                  (7,9),
+#                  (8,9),
+#                  (9,10),
+#                  (10,11),
+#                  (11,14),
+#                  (11,15),
+#                  (11,12),
+#                  (14,15),
+#                  (15,12),
+#                  (12,14)
+#                 ])
+## plot_graph(G)
+#print(nx.core_number(G))
+#
 # Sequential algorithm
 
 def seq_max_k_core(G):
@@ -83,5 +83,5 @@ def seq_k_core_decompo(G):
         # plot_graph(G)
 
     return peels
-
-plot_graph(G)
+#
+#plot_graph(G)
