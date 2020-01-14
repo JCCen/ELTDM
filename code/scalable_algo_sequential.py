@@ -73,13 +73,14 @@ def seq_k_core_decompo(G):
 
     while list(G.nodes):
         K, k_num = seq_max_k_core(G)
-        plot_graph(K)
+        # plot_graph(K)
         # This loop can be parallelized
-        for n in K.nodes:
-            peels[n] = k_num
+        for e in K.edges:
+            peels[e] = k_num
 
         G.remove_edges_from(list(K.edges))
         G.remove_nodes_from(list(K.nodes))
+        # plot_graph(G)
 
     return peels
 
