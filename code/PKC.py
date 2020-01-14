@@ -3,6 +3,8 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
+import pycuda.driver as cuda
+from pycuda.compiler import SourceModule
 
 def plot_graph(G):
     nx.draw(G, with_labels=True)
@@ -39,7 +41,7 @@ def seq_pkc(G):
     n = len(nodes_list)
     visited = level = start = end = 0
     buff = np.empty(n).astype(int)
-    deg = dict(G.degree).copy()
+    deg = dict(G.degree)
 
     while (visited < n):
 
@@ -70,3 +72,20 @@ assert(nx.core_number(G) == seq_pkc_kcore)
 
 
 # Parallel PKC
+def parallel_pck(G):
+
+    nodes_array = np.array(G.nodes)
+    deg_array = np.array(list(dict(G.degree).values()))
+    # For each node, create neighbours array
+    # To make a ndarray, we need lists of same size => padding with -1
+    neighbors = [list(G.neighbors(n)) for n in nodes_array]
+    max_n_neighbors = max(len(x) for x in neighbors)
+    neighbors = [x + [-1]*(max_n_neighbors - len(x)) for x in neighbors]
+    neighbors_array = np.array(neighbors)
+    assert(nodes_array.shape[0] == deg_array.shape[0])
+    assert (nodes_array.shape[0] == neighbors_array.shape[0])
+
+
+
+
+
