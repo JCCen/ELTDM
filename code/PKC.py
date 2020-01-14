@@ -72,7 +72,7 @@ assert(nx.core_number(G) == seq_pkc_kcore)
 
 
 # Parallel PKC
-def parallel_pck(G):
+def parallel_pkc(G):
 
     nodes_array = np.array(G.nodes)
     deg_array = np.array(list(dict(G.degree).values()))
