@@ -4,6 +4,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 import pycuda.driver as cuda
+import pycuda.autoinit
 from pycuda.compiler import SourceModule
 
 def plot_graph(G):
@@ -74,17 +75,43 @@ assert(nx.core_number(G) == seq_pkc_kcore)
 # Parallel PKC
 def parallel_pkc(G):
 
-    nodes_array = np.array(G.nodes)
-    deg_array = np.array(list(dict(G.degree).values()))
-    # For each node, create neighbours array
+    # Get graph info in arrays
+    nodes = np.array(G.nodes)
+    deg = np.array(list(dict(G.degree).values()))
+    # For each node, create neighbors array
     # To make a ndarray, we need lists of same size => padding with -1
-    neighbors = [list(G.neighbors(n)) for n in nodes_array]
+    neighbors = [list(G.neighbors(n)) for n in nodes]
     max_n_neighbors = max(len(x) for x in neighbors)
     neighbors = [x + [-1]*(max_n_neighbors - len(x)) for x in neighbors]
-    neighbors_array = np.array(neighbors)
-    assert(nodes_array.shape[0] == deg_array.shape[0])
-    assert (nodes_array.shape[0] == neighbors_array.shape[0])
+    neighbors = np.array(neighbors)
+    assert(nodes.shape[0] == deg.shape[0])
+    assert (nodes.shape[0] == neighbors.shape[0])
 
+    # Export graph arrays to device
+    nodes_gpu = cuda.mem_alloc(nodes.nbytes)
+    cuda.memcpy_htod(nodes_gpu, nodes)
+    deg_gpu = cuda.mem_alloc(deg.nbytes)
+    cuda.memcpy_htod(deg_gpu, deg)
+    neighbors_gpu = cuda.mem_alloc(neighbors.nbytes)
+    cuda.memcpy_htod(neighbors_gpu, neighbors)
+
+    # Kernel function
+    mod = SourceModule("""
+      __global__ void doublify(float *a)
+      {
+        int idx = threadIdx.x;
+        a[idx] *= 2;
+      }
+      """)
+
+    # Apply kernel
+    func = mod.get_function("doublify")
+    func(nodes_gpu, grid = (14, 1), block=(1, 1, 1))
+
+    # Retrieve results
+    nodes_doubled = np.empty_like(nodes)
+    cuda.memcpy_dtoh(nodes_doubled, nodes_gpu)
+    nodes_doubled
 
 
 
