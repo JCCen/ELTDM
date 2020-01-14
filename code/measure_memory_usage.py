@@ -6,7 +6,6 @@ import time
 import scalable_algo_sequential
 import naive_algo
 import networkx as nx
-import time
 
 @profile
 def create_graph(n):
