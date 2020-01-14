@@ -1,7 +1,6 @@
 
 import numpy
 import pycuda.driver as cuda
-import pycuda.autoinit
 from pycuda.compiler import SourceModule
 
 a = numpy.random.randn(4,4)

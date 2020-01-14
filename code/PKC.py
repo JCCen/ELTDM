@@ -30,8 +30,6 @@ G.add_edges_from([(1,2),(1,8),(1,9),
                   (15,12),
                   (12,14)
                  ])
-# plot_graph(G)
-print(nx.core_number(G))
 
 
 # Sequential PKC
@@ -41,7 +39,7 @@ def seq_pkc(G):
     n = len(nodes_list)
     visited = level = start = end = 0
     buff = np.empty(n).astype(int)
-    deg = dict(G.degree)
+    deg = dict(G.degree).copy()
 
     while (visited < n):
 
@@ -50,17 +48,15 @@ def seq_pkc(G):
                 buff[end] = i
                 end += 1
 
-        while (start < end):
+        while start < end:
             v = buff[start]
             start += 1
             for u in G.neighbors(nodes_list[v]):
-                if deg[nodes_list[u]] > level:
-                    a = deg[nodes_list[u]] - 1
-                    if a == (level+1):
-                        buff[end] <- u
+                if deg[u] > level:
+                    deg[u] -= 1
+                    if deg[u] == level:
+                        buff[end] = u
                         end += 1
-                    elif a <= level:
-                        deg[nodes_list[u]] += 1
 
         visited += end
         start = end = 0
@@ -68,3 +64,9 @@ def seq_pkc(G):
 
     return deg
 
+plot_graph(G)
+seq_pkc_kcore = seq_pkc(G)
+assert(nx.core_number(G) == seq_pkc_kcore)
+
+
+# Parallel PKC
