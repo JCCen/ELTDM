@@ -8,7 +8,7 @@ import pycuda.autoinit
 from pycuda.compiler import SourceModule
 
 from concurrent.futures import ProcessPoolExecutor
-from threading import Thread
+from threading import Thread, Lock
 import logging
 
 def plot_graph(G):
@@ -76,6 +76,11 @@ seq_pkc_kcore = seq_pkc(G)
 assert(nx.core_number(G) == seq_pkc_kcore)
 
 
+
+# Parallel PKC over CPU
+
+_lock = Lock()
+
 class MyThread(Thread):
 
     def __init__(self, id, buff, level, start, end):
@@ -86,16 +91,37 @@ class MyThread(Thread):
         self.start = start
         self.end = end
 
-    def run(self, node_ind, node_deg):
+    def run(self, node_ind, node_neighbors, deg_dict):
+        global _lock
         logging.info(f"Thread {self.id} starting")
 
+        node_deg = len(node_neighbors)
         if node_deg == self.level:
             self.buff[self.end] = node_ind
             self.end += 1
 
+        while self.start < self.end:
+            v = self.buff[self.start]
+            self.start += 1
+
+            for u in node_neighbors:
+                if deg_dict[u] > self.level:
+                    with _lock:
+                        du = deg_dict[u] - 1
+
+                    if du == self.level:
+                        self.buff[self.end] = u
+                        self.end += 1
+
+                    if du <= self.level:
+                        with _lock:
+                            deg_dict[u] += 1
 
 
-# Parallel PKC over CPU
+
+
+
+
 def python_threading_pkc(G, n_threads=2):
 
     nodes_list = list(G.nodes)
@@ -104,7 +130,7 @@ def python_threading_pkc(G, n_threads=2):
     buff = np.empty(n // n_threads).astype(int)
     deg = dict(G.degree)
 
-    while (visited < n):
+    while visited < n:
 
         for i in range(n):
             if deg[nodes_list[i]] == level:
