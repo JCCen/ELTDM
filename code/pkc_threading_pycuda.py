@@ -5,11 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pycuda.driver as cuda
 import pycuda.autoinit
-from pycuda.compiler import SourceModule
 
-from concurrent.futures import ProcessPoolExecutor
-from threading import Thread, Lock
-import logging
 
 def plot_graph(G):
     nx.draw(G, with_labels=True)
@@ -74,68 +70,6 @@ def seq_pkc(G):
 plot_graph(G)
 seq_pkc_kcore = seq_pkc(G)
 assert(nx.core_number(G) == seq_pkc_kcore)
-
-
-
-# Parallel PKC over CPU
-
-_lock = Lock()
-
-class ThreadPKC(Thread):
-
-    def __init__(self, id, buff):
-        Thread.__init__(self)
-        self.id = id
-        self.buff = buff.copy()
-        self.level = 0
-        self.start = 0
-        self.end = 0
-
-    def run(self, node_ind, G, deg, visited):
-        global _lock
-        logging.info(f"Thread {self.id} starting")
-
-        node = list(G.nodes)[node_ind]
-        if G.degree[node] == self.level:
-            self.buff[self.end] = node_ind
-            self.end += 1
-
-        while self.start < self.end:
-            v = self.buff[self.start]
-            self.start += 1
-
-            for u in G.neighbors(v):
-                if deg[u] > self.level:
-                    with _lock:
-                        du = deg[u] - 1
-
-                    if du == self.level:
-                        self.buff[self.end] = u
-                        self.end += 1
-
-                    if du <= self.level:
-                        with _lock:
-                            deg[u] += 1
-
-        with _lock:
-            visited += self.end
-
-        logging.info(f"Thread {self.id} finishing")
-
-
-def python_threading_pkc(G, n_threads):
-
-    G = G.copy()
-    n = len(G.nodes)
-
-    visited = 0
-    buff = np.empty(n // n_threads).astype(int)
-
-    while visited < n:
-
-
-
-    return deg
 
 
 
