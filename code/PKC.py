@@ -7,6 +7,10 @@ import pycuda.driver as cuda
 import pycuda.autoinit
 from pycuda.compiler import SourceModule
 
+from concurrent.futures import ProcessPoolExecutor
+from threading import Thread
+import logging
+
 def plot_graph(G):
     nx.draw(G, with_labels=True)
     plt.show()
@@ -72,8 +76,62 @@ seq_pkc_kcore = seq_pkc(G)
 assert(nx.core_number(G) == seq_pkc_kcore)
 
 
-# Parallel PKC
-def parallel_pkc(G):
+class MyThread(Thread):
+
+    def __init__(self, id, buff, level, start, end):
+        Thread.__init__(self)
+        self.id = id
+        self.buff = buff
+        self.level = level
+        self.start = start
+        self.end = end
+
+    def run(self, node_ind, node_deg):
+        logging.info(f"Thread {self.id} starting")
+
+        if node_deg == self.level:
+            self.buff[self.end] = node_ind
+            self.end += 1
+
+
+
+# Parallel PKC over CPU
+def python_threading_pkc(G, n_threads=2):
+
+    nodes_list = list(G.nodes)
+    n = len(nodes_list)
+    visited = level = start = end = 0
+    buff = np.empty(n // n_threads).astype(int)
+    deg = dict(G.degree)
+
+    while (visited < n):
+
+        for i in range(n):
+            if deg[nodes_list[i]] == level:
+                buff[end] = i
+                end += 1
+
+        while start < end:
+            v = buff[start]
+            start += 1
+            for u in G.neighbors(nodes_list[v]):
+                if deg[u] > level:
+                    deg[u] -= 1
+                    if deg[u] == level:
+                        buff[end] = u
+                        end += 1
+
+        visited += end
+        start = end = 0
+        level += 1
+
+    return deg
+
+
+
+
+# Parallel PKC over GPU
+def gpu_pkc(G):
 
     # Get graph info in arrays
     nodes = np.array(G.nodes)
