@@ -81,22 +81,22 @@ assert(nx.core_number(G) == seq_pkc_kcore)
 
 _lock = Lock()
 
-class MyThread(Thread):
+class ThreadPKC(Thread):
 
-    def __init__(self, id, buff, level, start, end):
+    def __init__(self, id, buff):
         Thread.__init__(self)
         self.id = id
-        self.buff = buff
-        self.level = level
-        self.start = start
-        self.end = end
+        self.buff = buff.copy()
+        self.level = 0
+        self.start = 0
+        self.end = 0
 
-    def run(self, node_ind, node_neighbors, deg_dict):
+    def run(self, node_ind, G, deg, visited):
         global _lock
         logging.info(f"Thread {self.id} starting")
 
-        node_deg = len(node_neighbors)
-        if node_deg == self.level:
+        node = list(G.nodes)[node_ind]
+        if G.degree[node] == self.level:
             self.buff[self.end] = node_ind
             self.end += 1
 
@@ -104,10 +104,10 @@ class MyThread(Thread):
             v = self.buff[self.start]
             self.start += 1
 
-            for u in node_neighbors:
-                if deg_dict[u] > self.level:
+            for u in G.neighbors(v):
+                if deg[u] > self.level:
                     with _lock:
-                        du = deg_dict[u] - 1
+                        du = deg[u] - 1
 
                     if du == self.level:
                         self.buff[self.end] = u
@@ -115,41 +115,25 @@ class MyThread(Thread):
 
                     if du <= self.level:
                         with _lock:
-                            deg_dict[u] += 1
+                            deg[u] += 1
+
+        with _lock:
+            visited += self.end
+
+        logging.info(f"Thread {self.id} finishing")
 
 
+def python_threading_pkc(G, n_threads):
 
+    G = G.copy()
+    n = len(G.nodes)
 
-
-
-def python_threading_pkc(G, n_threads=2):
-
-    nodes_list = list(G.nodes)
-    n = len(nodes_list)
-    visited = level = start = end = 0
+    visited = 0
     buff = np.empty(n // n_threads).astype(int)
-    deg = dict(G.degree)
 
     while visited < n:
 
-        for i in range(n):
-            if deg[nodes_list[i]] == level:
-                buff[end] = i
-                end += 1
 
-        while start < end:
-            v = buff[start]
-            start += 1
-            for u in G.neighbors(nodes_list[v]):
-                if deg[u] > level:
-                    deg[u] -= 1
-                    if deg[u] == level:
-                        buff[end] = u
-                        end += 1
-
-        visited += end
-        start = end = 0
-        level += 1
 
     return deg
 
