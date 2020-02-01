@@ -1,7 +1,11 @@
 
+# python3 code/pkc_cython/setup.py build_ext --inplace
+
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
+
+import pkc_cython
 
 def plot_graph(G):
     nx.draw(G, with_labels=True)
