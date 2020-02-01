@@ -44,6 +44,7 @@ def seq_pkc(G):
     buff = np.empty(n).astype(int)
     deg = dict(G.degree)
 
+    a = []
     while (visited < n):
 
         for i in range(n):
@@ -64,6 +65,7 @@ def seq_pkc(G):
         visited += end
         start = end = 0
         level += 1
+        a.append(list(deg.values()))
 
     return deg
 

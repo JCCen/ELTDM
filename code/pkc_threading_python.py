@@ -31,8 +31,6 @@ class Counters():
 
 def process_node(nodes_ind, G, counters, level):
 
-    # logging.info(f"Thread {thread_id} starting")
-
     buff = np.zeros_like(nodes_ind)
     start = 0
     end = 0
@@ -40,8 +38,8 @@ def process_node(nodes_ind, G, counters, level):
     nodes_list = list(G.nodes)
 
     for i in nodes_ind:
-        node = nodes_list[i]
-        if G.degree[node] == level:
+        deg_i = counters.get_degree(nodes_list[i])
+        if deg_i == level:
             buff[end] = i
             end += 1
 
@@ -50,11 +48,12 @@ def process_node(nodes_ind, G, counters, level):
         start += 1
         for u in G.neighbors(nodes_list[v]):
             if counters.get_degree(u) > level:
-                du = counters.get_degree(u) - 1
-                if du == level:
-                    buff[end] = u
+                counters.increment_degree(u, -1)
+                a = counters.get_degree(u)
+                if a == level:
+                    buff[end] = nodes_list.index(u)
                     end += 1
-                if du <= level:
+                if a < level:
                     counters.increment_degree(u, 1)
 
     counters.increment_visited(end)
@@ -68,9 +67,11 @@ G.add_edges_from([(1,2), (1,8), (1,9), (5,2), (5,3), (5,4), (5,6), (6,7), (6,8),
                   (11,12), (14,15), (15,12), (12,14)])
 n = len(G.nodes)
 
+
+
 # Multithreaded PKC
 counters = Counters(G)
-n_threads = 2
+n_threads = 7
 nodes_split = np.array_split(range(n), n_threads)
 
 visited = counters.get_visited()
@@ -78,19 +79,15 @@ level = 0
 thread_list = []
 
 while visited < n:
-    print(visited, flush=True)
     for t in range(n_threads):
         thread = Thread(target=process_node, args=(nodes_split[t], G, counters, level))
         thread_list.append(thread)
         thread_list[t].start()
-
     for thread in thread_list:
         thread.join()
-
     thread_list = []
 
     level += 1
     visited = counters.get_visited()
-
 
 assert(nx.core_number(G) == counters.deg)
