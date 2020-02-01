@@ -1,0 +1,4 @@
+CMDLINE /home/jaime/anaconda3/bin/python measure_memory_usage.py
+MEM 1.917969 1579033816.2178
+MEM 19.691406 1579033816.3181
+MEM 34.804688 1579033816.4184
