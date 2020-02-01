@@ -8,6 +8,7 @@ class Counters():
     """Encapsulate counters in a class with threadlocks to avoid race conditions."""
 
     def __init__(self, G):
+        G = G.copy()
         self.deg = dict(G.degree)
         self.visited = 0
         self.lock = Lock()
@@ -19,6 +20,7 @@ class Counters():
     def increment_degree(self, node, value):
         with self.lock:
             self.deg[node] += value
+            return self.deg[node]
 
     def get_visited(self):
         with self.lock:
@@ -37,7 +39,6 @@ def process_nodes(nodes_ind, G, counters, level):
     """Process a sequence of nodes on a local thread."""
     nodes_list = list(G.nodes)
     buff = np.zeros_like(nodes_list).astype(int)
-    # buff = np.zeros(len(nodes_ind)+1)
     start = 0
     end = 0
 
@@ -52,8 +53,7 @@ def process_nodes(nodes_ind, G, counters, level):
         start += 1
         for u in G.neighbors(nodes_list[v]):
             if counters.get_degree(u) > level:
-                counters.increment_degree(u, -1)
-                a = counters.get_degree(u)
+                a = counters.increment_degree(u, -1)
                 if a == level:
                     buff[end] = nodes_list.index(u)
                     end += 1
@@ -89,7 +89,6 @@ def pkc(G, n_threads):
         visited = counters.get_visited()
 
     deg = counters.deg.copy()
-    counters.reinitialize(G)
 
     return deg
 
@@ -108,11 +107,13 @@ def pkc(G, n_threads):
 # Test on bigger graph
 G_big = nx.duplication_divergence_graph(100, 0.5)
 kcore_G_big_true = nx.core_number(G_big)
-kcore_G_big_pkc = pkc(G_big, 5)
-# assert(kcore_G_big_true == kcore_G_big_pkc)
+kcore_G_big_pkc = pkc(G_big, 2)
 
 kcore_true = np.array(list(kcore_G_big_true.values()))
 kcore_false = np.array(list(kcore_G_big_pkc.values()))
 diff = kcore_true - kcore_false
 print(diff.sum())
 print(diff.max())
+print(diff)
+print(kcore_true[diff != 0])
+print(kcore_false[diff != 0])

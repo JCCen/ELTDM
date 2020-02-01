@@ -1,10 +1,9 @@
 
 
-import networkx as nx
 import matplotlib.pyplot as plt
+import networkx as nx
 import numpy as np
 import pycuda.driver as cuda
-import pycuda.autoinit
 
 
 def plot_graph(G):
