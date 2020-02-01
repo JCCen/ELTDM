@@ -1,38 +1,16 @@
+# distutils: extra_compile_args=-fopenmp
+# distutils: extra_link_args=-fopenmp
 
-import networkx as nx
 import numpy as np
-from threading import Thread, Lock
+cimport cython
+from cython.parallel import prange
+
+DTYPE = np.intc
 
 
-class Counters():
-    """Encapsulate counters in a class with threadlocks to avoid race conditions."""
 
-    def __init__(self, G):
-        G = G.copy()
-        self.deg = dict(G.degree)
-        self.visited = 0
-        self.lock = Lock()
+def pkc
 
-    def get_degree(self, node):
-        with self.lock:
-            return self.deg[node]
-
-    def increment_degree(self, node, value):
-        with self.lock:
-            self.deg[node] += value
-            return self.deg[node]
-
-    def get_visited(self):
-        with self.lock:
-            return self.visited
-
-    def increment_visited(self, value):
-        with self.lock:
-            self.visited += value
-
-    def reinitialize(self, G):
-        self.visited = 0
-        self.deg = dict(G.degree)
 
 
 def process_nodes(nodes_ind, G, counters, level):
