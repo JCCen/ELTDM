@@ -7,22 +7,20 @@ cimport cython, openmp
 cdef int NUM_THREADS = 5
 DTYPE = np.intc
 
-def pkc(int[:, :] nodes, int[:, :] neighbors):
+def pkc(int[:] deg, int[:, :] neighbors):
 
     # global variables
     cdef:
-        long n = nodes.shape[0]
-        long visited = 0
-        int * core = <int *> malloc(sizeof(int) * n)
         int i
+        long n = deg.shape[0]
+        long visited = 0
 
     # thread local variables
+    cdef:
         int * buf
         int level = 0
         long start = 0
         long end = 0
-
-    assert core != NULL
 
     # start parallelization over thread with released GIL
     with nogil, parallel():
@@ -33,13 +31,12 @@ def pkc(int[:, :] nodes, int[:, :] neighbors):
             abort()
 
         while visited < n:
-
             for i in prange(n, schedule='static'):
                 visited += 1
 
         free(buf)
 
-    return True
+    return deg
 
 
 
