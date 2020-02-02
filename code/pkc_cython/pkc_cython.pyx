@@ -1,8 +1,60 @@
 
 import numpy as np
-from cython.parallel import prange
+from cython.parallel import parallel, prange,  threadid
+from libc.stdlib cimport abort, malloc, free
+cimport cython, openmp
 
+cdef int NUM_THREADS = 5
 DTYPE = np.intc
+
+def pkc(int[:, :] nodes, int[:, :] neighbors):
+
+    # global variables
+    cdef:
+        long n = nodes.shape[0]
+        long visited = 0
+        int * core = <int *> malloc(sizeof(int) * n)
+        int i
+
+    # thread local variables
+        int * buf
+        int level = 0
+        long start = 0
+        long end = 0
+
+    assert core != NULL
+
+    # start parallelization over thread with released GIL
+    with nogil, parallel():
+
+        # define thread local buffer
+        buf = <int *> malloc(sizeof(int) * n / NUM_THREADS)
+        if buf is NULL:
+            abort()
+
+        while visited < n:
+
+            for i in prange(n, schedule='static'):
+                visited += 1
+
+        free(buf)
+
+    return True
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #def process_nodes(nodes_ind, G, counters, level):
 #    """Process a sequence of nodes on a local thread."""
