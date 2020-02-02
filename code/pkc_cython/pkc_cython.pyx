@@ -11,32 +11,55 @@ def pkc(int[:] deg, int[:, :] neighbors):
 
     # global variables
     cdef:
-        int i
         long n = deg.shape[0]
         long visited = 0
 
     # thread local variables
     cdef:
-        int * buf
-        int level = 0
-        long start = 0
-        long end = 0
+        int *buff
+        int *start
+        int *end
+        int *level
+        Py_ssize_t i, j, u, v
 
     # start parallelization over thread with released GIL
     with nogil, parallel():
 
-        # define thread local buffer
-        buf = <int *> malloc(sizeof(int) * n / NUM_THREADS)
-        if buf is NULL:
+        # declare thread local variables
+        buff = <int *> malloc(sizeof(int) * n / NUM_THREADS)
+        if buff is NULL:
             abort()
+        end = <int *> malloc(sizeof(int))
+        end[0] = 0
+        start = <int *> malloc(sizeof(int))
+        start[0] = 0
+        level = <int *> malloc(sizeof(int))
+        level[0] = 0
 
         while visited < n:
+
             for i in prange(n, schedule='static'):
-                visited += 1
+                if deg[i] == level[0]:
+                    buff[end[0]] = i
+                    end[0] += 1
 
-        free(buf)
+#            while start < end:
+#
+#                v = buff[start]
+#                start += 1
+#
+#                for
 
-    return deg
+
+
+
+
+
+
+
+        free(buff)
+
+    return np.array(deg)
 
 
 
