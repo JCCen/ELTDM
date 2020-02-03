@@ -7,7 +7,7 @@ N_PROCESSES = cpu_count()
 
 
 def process_nodes(nodes_ind, G, deg, visited, level):
-    """Process a sequence of nodes on a local thread."""
+    """Process a sequence of nodes on a local process."""
     nodes_list = list(G.nodes)
     buff = np.zeros_like(nodes_list).astype(int)
     start = 0
@@ -36,7 +36,7 @@ def process_nodes(nodes_ind, G, deg, visited, level):
 
 
 def pkc(G):
-    """Perform multi-threaded K-core decomposition."""
+    """Perform multiprocessing K-core decomposition."""
     G = G.copy()
     nodes = list(G.nodes)
     n = len(nodes)
