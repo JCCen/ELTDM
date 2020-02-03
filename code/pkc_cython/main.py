@@ -28,4 +28,4 @@ max_n_neighbors = max(len(x) for x in neighbors)
 neighbors = [x + [-1]*(max_n_neighbors - len(x)) for x in neighbors]
 neighbors = np.array(neighbors, dtype=DTYPE)
 
-pkc_out = pkc_cython.pkc(deg_init, neighbors)
+pkc_out = pkc_cython.pkc(deg_init, deg_init, neighbors)
