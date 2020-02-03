@@ -12,8 +12,8 @@ DTYPE = np.intc
 def pkc(int[:] deg, int[:] deg_init, int[:, :] neighbors):
 
     # C externals for sync threads + increment/decrement
-#    cdef extern int __sync_fetch_and_sub (int *deg_node, int decrement) nogil
-#    cdef extern int __sync_fetch_and_add (int *deg_node, int increment) nogil
+    cdef extern int __sync_fetch_and_sub (int *deg_node, int decrement) nogil
+    cdef extern int __sync_fetch_and_add (int *deg_node, int increment) nogil
 
     # global variables
     cdef:
@@ -56,40 +56,40 @@ def pkc(int[:] deg, int[:] deg_init, int[:, :] neighbors):
                 print(visited)
                 visited = visited + 1
 
-#            for i in prange(n, schedule='static'):
-#                if deg[i] == level[0]:
-#                    buff[end[0]] = i
-#                    end[0] += 1
+            for i in prange(n, schedule='static'):
+                if deg[i] == level[0]:
+                    buff[end[0]] = i
+                    end[0] += 1
 
 
 
-#            while start < end:
-#
-#                v[0] = buff[start[0]]
-#                start[0] += 1
-#                with gil:
-#                    n_neighbors_v[0] = deg_init[v[0]]
-#
-#                for u in range(n_neighbors_v[0]):
-#                    with gil:
-#                        deg_u[0] = deg[u]
-#                    if deg_u[0] > level[0]:
-#                        du[0] = __sync_fetch_and_sub(&deg[u], 1)
-#                    if du[0] == (level[0] + 1):
-#                        buff[end[0]] = u
-#                        end[0] += 1
-#                    if du[0] <= level[0]:
-#                        __sync_fetch_and_add(&deg[u], 1)
+            while start < end:
 
-#            __sync_fetch_and_add(&visited, 1)
-#            with gil:
-#                visited = visited + 1
-#
-#            with gil:
-#                start[0] = 0
-#                end[0] = 0
-#                level[0] += 1
-#
+                v[0] = buff[start[0]]
+                start[0] += 1
+                with gil:
+                    n_neighbors_v[0] = deg_init[v[0]]
+
+                for u in range(n_neighbors_v[0]):
+                    with gil:
+                        deg_u[0] = deg[u]
+                    if deg_u[0] > level[0]:
+                        du[0] = __sync_fetch_and_sub(&deg[u], 1)
+                    if du[0] == (level[0] + 1):
+                        buff[end[0]] = u
+                        end[0] += 1
+                    if du[0] <= level[0]:
+                        __sync_fetch_and_add(&deg[u], 1)
+
+            __sync_fetch_and_add(&visited, 1)
+            with gil:
+                visited = visited + 1
+
+            with gil:
+                start[0] = 0
+                end[0] = 0
+                level[0] += 1
+
         free(buff)
 
     return np.array(deg)
