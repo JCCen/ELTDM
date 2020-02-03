@@ -43,12 +43,13 @@ def pkc(int[:] deg, int[:, :] neighbors):
                     buff[end[0]] = i
                     end[0] += 1
 
-#            while start < end:
-#
-#                v = buff[start]
-#                start += 1
-#
-#                for
+            while start < end:
+
+                buff[start[0]]
+                start[0] += 1
+
+
+
 
 
 

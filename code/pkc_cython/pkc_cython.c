@@ -2379,7 +2379,7 @@ static PyObject *__pyx_pf_10pkc_cython_pkc(CYTHON_UNUSED PyObject *__pyx_self, _
  *                     buff[end[0]] = i
  *                     end[0] += 1             # <<<<<<<<<<<<<<
  * 
- * #            while start < end:
+ *             while start < end:
  */
                                     __pyx_t_8 = 0;
                                     (__pyx_v_end[__pyx_t_8]) = ((__pyx_v_end[__pyx_t_8]) + 1);
@@ -2449,9 +2449,40 @@ static PyObject *__pyx_pf_10pkc_cython_pkc(CYTHON_UNUSED PyObject *__pyx_self, _
                         }
                       }
                   }
+
+                  /* "pkc_cython.pyx":46
+ *                     end[0] += 1
+ * 
+ *             while start < end:             # <<<<<<<<<<<<<<
+ * 
+ *                 buff[start[0]]
+ */
+                  while (1) {
+                    __pyx_t_2 = ((__pyx_v_start < __pyx_v_end) != 0);
+                    if (!__pyx_t_2) break;
+
+                    /* "pkc_cython.pyx":48
+ *             while start < end:
+ * 
+ *                 buff[start[0]]             # <<<<<<<<<<<<<<
+ *                 start[0] += 1
+ * 
+ */
+                    (void)((__pyx_v_buff[(__pyx_v_start[0])]));
+
+                    /* "pkc_cython.pyx":49
+ * 
+ *                 buff[start[0]]
+ *                 start[0] += 1             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+                    __pyx_t_3 = 0;
+                    (__pyx_v_start[__pyx_t_3]) = ((__pyx_v_start[__pyx_t_3]) + 1);
+                  }
                 }
 
-                /* "pkc_cython.pyx":60
+                /* "pkc_cython.pyx":59
  * 
  * 
  *         free(buff)             # <<<<<<<<<<<<<<
@@ -2459,7 +2490,7 @@ static PyObject *__pyx_pf_10pkc_cython_pkc(CYTHON_UNUSED PyObject *__pyx_self, _
  *     return np.array(deg)
  */
                 free(__pyx_v_buff);
-                goto __pyx_L21;
+                goto __pyx_L23;
                 __pyx_L8_error:;
                 {
                     #ifdef WITH_THREAD
@@ -2478,8 +2509,8 @@ static PyObject *__pyx_pf_10pkc_cython_pkc(CYTHON_UNUSED PyObject *__pyx_self, _
                     #endif
                 }
                 __pyx_parallel_why = 4;
-                goto __pyx_L21;
-                __pyx_L21:;
+                goto __pyx_L23;
+                __pyx_L23:;
                 #ifdef _OPENMP
                 Py_END_ALLOW_THREADS
                 #else
@@ -2552,7 +2583,7 @@ static PyObject *__pyx_pf_10pkc_cython_pkc(CYTHON_UNUSED PyObject *__pyx_self, _
       }
   }
 
-  /* "pkc_cython.pyx":62
+  /* "pkc_cython.pyx":61
  *         free(buff)
  * 
  *     return np.array(deg)             # <<<<<<<<<<<<<<
@@ -2560,12 +2591,12 @@ static PyObject *__pyx_pf_10pkc_cython_pkc(CYTHON_UNUSED PyObject *__pyx_self, _
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __Pyx_GetModuleGlobalName(__pyx_t_10, __pyx_n_s_np); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_10, __pyx_n_s_np); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 61, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
-  __pyx_t_11 = __Pyx_PyObject_GetAttrStr(__pyx_t_10, __pyx_n_s_array); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_t_11 = __Pyx_PyObject_GetAttrStr(__pyx_t_10, __pyx_n_s_array); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 61, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_11);
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-  __pyx_t_10 = __pyx_memoryview_fromslice(__pyx_v_deg, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_t_10 = __pyx_memoryview_fromslice(__pyx_v_deg, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 61, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
   __pyx_t_12 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_11))) {
@@ -2580,7 +2611,7 @@ static PyObject *__pyx_pf_10pkc_cython_pkc(CYTHON_UNUSED PyObject *__pyx_self, _
   __pyx_t_9 = (__pyx_t_12) ? __Pyx_PyObject_Call2Args(__pyx_t_11, __pyx_t_12, __pyx_t_10) : __Pyx_PyObject_CallOneArg(__pyx_t_11, __pyx_t_10);
   __Pyx_XDECREF(__pyx_t_12); __pyx_t_12 = 0;
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-  if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 62, __pyx_L1_error)
+  if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 61, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
   __pyx_r = __pyx_t_9;
