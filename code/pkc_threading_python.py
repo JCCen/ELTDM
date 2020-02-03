@@ -14,20 +14,20 @@ class Counters():
         self.lock = Lock()
 
     def get_degree(self, node):
-        with self.lock:
+        # with self.lock:
             return self.deg[node]
 
     def increment_degree(self, node, value):
-        with self.lock:
+        # with self.lock:
             self.deg[node] += value
             return self.deg[node]
 
     def get_visited(self):
-        with self.lock:
+        # with self.lock:
             return self.visited
 
     def increment_visited(self, value):
-        with self.lock:
+        # with self.lock:
             self.visited += value
 
     def reinitialize(self, G):
@@ -95,25 +95,25 @@ def pkc(G, n_threads):
 
 
 # Test on toy graph
-G_toy = nx.Graph([])
-G_toy.add_edges_from([(1,2), (1,8), (1,9), (5,2), (5,3), (5,4), (5,6), (6,7), (6,8),
-                  (6,9), (7,8), (7,9), (8,9), (9,10), (10,11), (11,14), (11,15),
-                  (11,12), (14,15), (15,12), (12,14)])
-
-kcore_G_toy = pkc(G_toy, 7)
-assert(nx.core_number(G_toy) == kcore_G_toy)
-print(kcore_G_toy)
+# G_toy = nx.Graph([])
+# G_toy.add_edges_from([(1,2), (1,8), (1,9), (5,2), (5,3), (5,4), (5,6), (6,7), (6,8),
+#                   (6,9), (7,8), (7,9), (8,9), (9,10), (10,11), (11,14), (11,15),
+#                   (11,12), (14,15), (15,12), (12,14)])
+#
+# kcore_G_toy = pkc(G_toy, 7)
+# assert(nx.core_number(G_toy) == kcore_G_toy)
+# print(kcore_G_toy)
 
 # Test on bigger graph
-# G_big = nx.duplication_divergence_graph(100, 0.5)
-# kcore_G_big_true = nx.core_number(G_big)
-# kcore_G_big_pkc = pkc(G_big, 2)
-#
-# kcore_true = np.array(list(kcore_G_big_true.values()))
-# kcore_false = np.array(list(kcore_G_big_pkc.values()))
-# diff = kcore_true - kcore_false
-# print(diff.sum())
-# print(diff.max())
-# print(diff)
-# print(kcore_true[diff != 0])
-# print(kcore_false[diff != 0])
+G_big = nx.duplication_divergence_graph(100, 0.5)
+kcore_G_big_true = nx.core_number(G_big)
+kcore_G_big_pkc = pkc(G_big, 2)
+
+kcore_true = np.array(list(kcore_G_big_true.values()))
+kcore_false = np.array(list(kcore_G_big_pkc.values()))
+diff = kcore_true - kcore_false
+print(diff.sum())
+print(diff.max())
+print(diff)
+print(kcore_true[diff != 0])
+print(kcore_false[diff != 0])
