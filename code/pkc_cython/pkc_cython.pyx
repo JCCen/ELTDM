@@ -12,8 +12,8 @@ DTYPE = np.intc
 def pkc(int[:] deg, int[:] deg_init, int[:, :] neighbors):
 
     # C externals for sync threads + increment/decrement
-    cdef extern int __sync_fetch_and_sub (int *deg_node, int decrement) nogil
-    cdef extern int __sync_fetch_and_add (int *deg_node, int increment) nogil
+#    cdef extern int __sync_fetch_and_sub (int *deg_node, int decrement) nogil
+#    cdef extern int __sync_fetch_and_add (int *deg_node, int increment) nogil
 
     # global variables
     cdef:
@@ -32,12 +32,6 @@ def pkc(int[:] deg, int[:] deg_init, int[:, :] neighbors):
         int *end
         int *level
         Py_ssize_t i, j, u
-
-#    i = 0
-#    n_neighbors = deg_init[i]
-#    test = np.zeros(n_neighbors, dtype=DTYPE)
-#    for j in range(n_neighbors):
-#        test[j] = neighbors[i, j]
 
 
     # start parallelization over thread with released GIL
@@ -58,100 +52,44 @@ def pkc(int[:] deg, int[:] deg_init, int[:, :] neighbors):
 
         while visited < n:
 
-            for i in prange(n, schedule='static'):
-                if deg[i] == level[0]:
-                    buff[end[0]] = i
-                    end[0] += 1
-
-            while start < end:
-
-                v[0] = buff[start[0]]
-                start[0] += 1
-                with gil:
-                    n_neighbors_v[0] = deg_init[v[0]]
-
-                for u in range(n_neighbors_v[0]):
-                    with gil:
-                        deg_u[0] = deg[u]
-                    if deg_u[0] > level[0]:
-                        du[0] = __sync_fetch_and_sub(&deg[u], 1)
-                    if du[0] == (level[0] + 1):
-                        buff[end[0]] = u
-                        end[0] += 1
-                    if du[0] <= level[0]:
-                        __sync_fetch_and_add(&deg[u], 1)
-
-            __sync_fetch_and_add(&visited, 1)
-
             with gil:
-                start[0] = 0
-                end[0] = 0
-                level[0] += 1
+                print(visited)
+                visited = visited + 1
 
+#            for i in prange(n, schedule='static'):
+#                if deg[i] == level[0]:
+#                    buff[end[0]] = i
+#                    end[0] += 1
+
+
+
+#            while start < end:
+#
+#                v[0] = buff[start[0]]
+#                start[0] += 1
+#                with gil:
+#                    n_neighbors_v[0] = deg_init[v[0]]
+#
+#                for u in range(n_neighbors_v[0]):
+#                    with gil:
+#                        deg_u[0] = deg[u]
+#                    if deg_u[0] > level[0]:
+#                        du[0] = __sync_fetch_and_sub(&deg[u], 1)
+#                    if du[0] == (level[0] + 1):
+#                        buff[end[0]] = u
+#                        end[0] += 1
+#                    if du[0] <= level[0]:
+#                        __sync_fetch_and_add(&deg[u], 1)
+
+#            __sync_fetch_and_add(&visited, 1)
+#            with gil:
+#                visited = visited + 1
+#
+#            with gil:
+#                start[0] = 0
+#                end[0] = 0
+#                level[0] += 1
+#
         free(buff)
 
     return np.array(deg)
-
-
-
-
-
-
-
-
-#def process_nodes(nodes_ind, G, counters, level):
-#    """Process a sequence of nodes on a local thread."""
-#    nodes_list = list(G.nodes)
-#    buff = np.zeros_like(nodes_list).astype(int)
-#    start = 0
-#    end = 0
-#
-#    for i in nodes_ind:
-#        deg_i = counters.get_degree(nodes_list[i])
-#        if deg_i == level:
-#            buff[end] = i
-#            end += 1
-#
-#    while start < end:
-#        v = buff[start]
-#        start += 1
-#        for u in G.neighbors(nodes_list[v]):
-#            if counters.get_degree(u) > level:
-#                a = counters.increment_degree(u, -1)
-#                if a == level:
-#                    buff[end] = nodes_list.index(u)
-#                    end += 1
-#                if a < level:
-#                    counters.increment_degree(u, 1)
-#
-#    counters.increment_visited(end)
-#
-#
-#def pkc(G, n_threads):
-#    """Perform multi-threaded K-core decomposition."""
-#    G = G.copy()
-#    n = len(G.nodes)
-#    assert(n_threads < n)
-#    counters = Counters(G)
-#
-#    nodes_split = np.array_split(range(n), n_threads)
-#    level = 0
-#    visited = 0
-#    thread_list = []
-#
-#    while visited < n:
-#        for t in range(n_threads):
-#            thread = Thread(target=process_nodes, args=(nodes_split[t],
-#                                                       G, counters, level))
-#            thread_list.append(thread)
-#            thread_list[t].start()
-#        for thread in thread_list:
-#            thread.join()
-#        thread_list = []
-#
-#        level += 1
-#        visited = counters.get_visited()
-#
-#    deg = counters.deg.copy()
-#
-#    return deg
