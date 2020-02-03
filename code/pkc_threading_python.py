@@ -2,6 +2,7 @@
 import networkx as nx
 import numpy as np
 from threading import Thread, Lock
+import time
 
 
 class Counters():
@@ -93,6 +94,12 @@ def pkc(G, n_threads):
     return deg
 
 
+G_big = nx.duplication_divergence_graph(10000, 0.5)
+
+a = time.time()
+kcore_G_big_pkc = pkc(G_big, 9)
+b = time.time() - a
+
 
 # Test on toy graph
 # G_toy = nx.Graph([])
@@ -105,15 +112,15 @@ def pkc(G, n_threads):
 # print(kcore_G_toy)
 
 # Test on bigger graph
-G_big = nx.duplication_divergence_graph(100, 0.5)
-kcore_G_big_true = nx.core_number(G_big)
-kcore_G_big_pkc = pkc(G_big, 2)
-
-kcore_true = np.array(list(kcore_G_big_true.values()))
-kcore_false = np.array(list(kcore_G_big_pkc.values()))
-diff = kcore_true - kcore_false
-print(diff.sum())
-print(diff.max())
-print(diff)
-print(kcore_true[diff != 0])
-print(kcore_false[diff != 0])
+# G_big = nx.duplication_divergence_graph(100, 0.5)
+# kcore_G_big_true = nx.core_number(G_big)
+# kcore_G_big_pkc = pkc(G_big, 2)
+#
+# kcore_true = np.array(list(kcore_G_big_true.values()))
+# kcore_false = np.array(list(kcore_G_big_pkc.values()))
+# diff = kcore_true - kcore_false
+# print(diff.sum())
+# print(diff.max())
+# print(diff)
+# print(kcore_true[diff != 0])
+# print(kcore_false[diff != 0])
