@@ -1,4 +1,4 @@
-# Fast keyword extraction from text using k-core decomposition
+# Fast keyword extraction from text using graph degeneracy-based approaches
 
 *Authors : Romain Avouac, Jaime Costa Centena*
 
